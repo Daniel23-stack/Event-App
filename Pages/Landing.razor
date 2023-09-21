@@ -44,11 +44,11 @@ else
 }
 
 @code {
-    private List<Event> events; // Make sure to inject and use the appropriate service to fetch events
+    private List<Event> events; 
 
-    // Fetch events from your service or repository on component initialization
+    
     protected override async Task OnInitializedAsync()
     {
-        events = await eventService.GetAvailableEventsAsync(); // Replace with your actual service method
+        events = await eventService.GetAvailableEventsAsync(); 
     }
 }

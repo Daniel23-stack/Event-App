@@ -27,10 +27,10 @@ else
     private string errorMessage = "";
     private Event eventDetails;
 
-    // Fetch event details from your service or repository on component initialization
+    // Fetch event details 
     protected override async Task OnInitializedAsync()
     {
-        eventDetails = await eventService.GetEventByIdAsync(EventId); // Replace with your actual service method
+        eventDetails = await eventService.GetEventByIdAsync(EventId); 
     }
 
     // Register for the event
@@ -42,43 +42,35 @@ else
             {
                 if (eventDetails.AvailableSeats > 0)
                 {
-    // Generate a unique reference number (e.g., EventId + Timestamp)
+    
                     string referenceNumber = GenerateReferenceNumber(eventDetails.Id);
 
-    // Perform registration logic here
-                    await eventService.RegisterForEventAsync(EventId, referenceNumber); // Replace with your actual service method
-                    eventDetails = await eventService.GetEventByIdAsync(EventId); // Refresh event details
+    
+                    await eventService.RegisterForEventAsync(EventId, referenceNumber); 
+                    eventDetails = await eventService.GetEventByIdAsync(EventId); 
                 }
                 else
                 {
-    // Handle no available seats
-    // You can display a message to the user
+
                     errorMessage = "No available seats for this event.";
                 }
             }
             else
             {
-    // Handle user already registered
-    // You can display a message to the user
+   
                 errorMessage = "You have already registered for this event.";
             }
         }
     }
     private string GenerateReferenceNumber(int eventId)
     {
-    // You can create a unique reference number based on the event ID and a timestamp.
-    // For example, EventId + Timestamp (formatted as a string).
+  
         return eventId.ToString() + DateTime.Now.ToString("yyyyMMddHHmmss");
     }
    
     private bool HasUserAlreadyRegistered(int eventId)
     {
-    // You can implement this logic using authentication and user-specific data
-    // For example, you can store user registrations in a separate table or data structure
-    // and check if the user has already registered for the event.
-    // In a real-world scenario, you would need to integrate this with user authentication.
 
-    // For demonstration purposes, we'll assume a user can only register once per event.
         return false;
     }
 }

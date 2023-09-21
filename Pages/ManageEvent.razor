@@ -75,7 +75,7 @@ else
     {
         await eventService.CreateEventAsync(newEvent); 
         newEvent = new Event(); // Clear the form after creating the event
-        events = await eventService.GetAvailableEventsAsync(); // Refresh the list of events
+        events = await eventService.GetAvailableEventsAsync(); 
     }
 
     // Delete an event
