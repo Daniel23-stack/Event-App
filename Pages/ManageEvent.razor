@@ -1,0 +1,87 @@
+﻿<!-- Pages/ManageEvents.razor -->
+
+@page "/manageevents"
+@using EventRegistrationApp.Models
+@using EventRegistrationApp.Services
+@inject EventService eventService
+
+<h3>Manage Events</h3>
+
+<!-- Display a list of existing events -->
+@if (events != null && events.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Event Name</th>
+                <th>Date</th>
+                <th>Capacity</th>
+                <th>Registered Attendees</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ev in events)
+            {
+                <tr>
+                    <td>@ev.Name</td>
+                    <td>@ev.Date.ToShortDateString()</td>
+                    <td>@ev.Capacity</td>
+                    <td>@ev.RegisteredAttendees</td>
+                    <td>
+                        <a href="/editevent/@ev.Id">Edit</a> |
+                        <button class="btn btn-link" @onclick="() => DeleteEvent(ev.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No events are available.</p>
+}
+
+<!-- Create new event form -->
+<h4>Create New Event</h4>
+<form>
+    <div class="form-group">
+        <label for="eventName">Event Name</label>
+        <input type="text" class="form-control" id="eventName" @bind="newEvent.Name">
+    </div>
+    <div class="form-group">
+        <label for="eventDate">Event Date</label>
+        <input type="date" class="form-control" id="eventDate" @bind="newEvent.Date">
+    </div>
+    <div class="form-group">
+        <label for="eventCapacity">Event Capacity</label>
+        <input type="number" class="form-control" id="eventCapacity" @bind="newEvent.Capacity">
+    </div>
+    <button type="button" class="btn btn-primary" @onclick="CreateEvent">Create Event</button>
+</form>
+
+@code {
+    private List<Event> events; 
+    private Event newEvent = new Event();
+
+    // Fetch events from your service or repository on component initialization
+    protected override async Task OnInitializedAsync()
+    {
+        events = await eventService.GetAvailableEventsAsync(); 
+    }
+
+    // Create a new event
+    private async Task CreateEvent()
+    {
+        await eventService.CreateEventAsync(newEvent); 
+        newEvent = new Event(); // Clear the form after creating the event
+        events = await eventService.GetAvailableEventsAsync(); // Refresh the list of events
+    }
+
+    // Delete an event
+    private async Task DeleteEvent(int eventId)
+    {
+        await eventService.DeleteEventAsync(eventId); 
+        events = await eventService.GetAvailableEventsAsync(); // Refresh the list of events
+    }
+}

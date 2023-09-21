@@ -1,0 +1,54 @@
+﻿<!-- Pages/Landing.razor -->
+
+@page "/"
+@using EventRegistrationApp.Models
+@using EventRegistrationApp.Services
+@inject EventService eventService
+
+<h3>Welcome to the Event Registration App</h3>
+<p>Here are the available events:</p>
+
+@if (events != null && events.Any())
+{
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Event Name</th>
+            <th>Date</th>
+            <th>Capacity</th>
+            <th>Registered Attendees</th>
+            <th>AvailableSeats</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var ev in events)
+        {
+            <tr>
+                <td>@ev.Name</td>
+                <td>@ev.Date.ToShortDateString()</td>
+                <td>@ev.Capacity</td>
+                <td>@ev.RegisteredAttendees</td>
+                <td>@ev.AvailableSeats</td>
+                <td>
+                    <a href="/registerevent/@ev.Id">Register</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No events are currently available.</p>
+}
+
+@code {
+    private List<Event> events; // Make sure to inject and use the appropriate service to fetch events
+
+    // Fetch events from your service or repository on component initialization
+    protected override async Task OnInitializedAsync()
+    {
+        events = await eventService.GetAvailableEventsAsync(); // Replace with your actual service method
+    }
+}

@@ -1,0 +1,92 @@
+﻿<!-- Pages/RegisterForEvent.razor -->
+@using EventRegistrationApp.Services
+@inject EventService eventService
+@page "/registerevent/{eventId:int}"
+@using EventRegistrationApp.Models
+
+<h3>Register for Event</h3>
+
+@if (eventDetails != null)
+{
+    <h4>@eventDetails.Name</h4>
+    <p>Date: @eventDetails.Date.ToShortDateString()</p>
+    <p>Capacity: @eventDetails.Capacity</p>
+    <p>Registered Attendees: @eventDetails.RegisteredAttendees</p>
+
+    <button class="btn btn-primary" @onclick="Register">Register for this Event</button>
+}
+else
+{
+    <p>Event not found.</p>
+}
+
+@code {
+    [Parameter]
+    public int EventId { get; set; }
+
+    private string errorMessage = "";
+    private Event eventDetails;
+
+    // Fetch event details from your service or repository on component initialization
+    protected override async Task OnInitializedAsync()
+    {
+        eventDetails = await eventService.GetEventByIdAsync(EventId); // Replace with your actual service method
+    }
+
+    // Register for the event
+    private async Task Register()
+    {
+        if (eventDetails != null)
+        {
+            if (!HasUserAlreadyRegistered(eventDetails.Id))
+            {
+                if (eventDetails.AvailableSeats > 0)
+                {
+    // Generate a unique reference number (e.g., EventId + Timestamp)
+                    string referenceNumber = GenerateReferenceNumber(eventDetails.Id);
+
+    // Perform registration logic here
+                    await eventService.RegisterForEventAsync(EventId, referenceNumber); // Replace with your actual service method
+                    eventDetails = await eventService.GetEventByIdAsync(EventId); // Refresh event details
+                }
+                else
+                {
+    // Handle no available seats
+    // You can display a message to the user
+                    errorMessage = "No available seats for this event.";
+                }
+            }
+            else
+            {
+    // Handle user already registered
+    // You can display a message to the user
+                errorMessage = "You have already registered for this event.";
+            }
+        }
+    }
+    private string GenerateReferenceNumber(int eventId)
+    {
+    // You can create a unique reference number based on the event ID and a timestamp.
+    // For example, EventId + Timestamp (formatted as a string).
+        return eventId.ToString() + DateTime.Now.ToString("yyyyMMddHHmmss");
+    }
+   
+    private bool HasUserAlreadyRegistered(int eventId)
+    {
+    // You can implement this logic using authentication and user-specific data
+    // For example, you can store user registrations in a separate table or data structure
+    // and check if the user has already registered for the event.
+    // In a real-world scenario, you would need to integrate this with user authentication.
+
+    // For demonstration purposes, we'll assume a user can only register once per event.
+        return false;
+    }
+}
+<div class="container">
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">
+            @errorMessage
+        </div>
+    }
+</div>

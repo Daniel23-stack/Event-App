@@ -1,0 +1,78 @@
+﻿<!-- EditEvent.razor -->
+
+@page "/editevent/{eventId:int}"
+@inject NavigationManager navigationManager
+@using EventRegistrationApp.Models
+@using EventRegistrationApp.Services
+@inject EventService eventService
+
+
+@code {
+    private Event eventToEdit;
+    private string errorMessage;
+
+    [Parameter]
+    public int EventId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+    // Load the event details for editing
+        eventToEdit = await eventService.GetEventByIdAsync(EventId);
+    }
+
+    private async Task UpdateEventAsync()
+    {
+        try
+        {
+            await eventService.UpdateEventAsync(eventToEdit);
+            navigationManager.NavigateTo("/manageevents");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "An error occurred while updating the event.";
+    // Log the error or handle it as needed
+        }
+    }
+
+}
+
+<div class="container mt-4">
+    <h3 >Edit Event</h3>
+    
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">
+            @errorMessage
+        </div>
+    }
+    @if (eventToEdit != null)
+    {
+        <div>
+            <label for="eventName">Event Name</label>
+            <input id="eventName" class="form-control" @bind="eventToEdit.Name" />
+        </div>
+    
+        <div>
+            <label for="eventDate">Event Date</label>
+            <input id="eventDate" type="date" class="form-control" @bind="eventToEdit.Date" />
+        </div>
+    
+        <div>
+            <label for="eventCapacity">Event Capacity</label>
+            <input id="eventCapacity" type="number" class="form-control" @bind="eventToEdit.Capacity" />
+        </div>
+    
+        <button class="btn btn-primary mt-2" @onclick="UpdateEventAsync">Save Changes</button>
+    }
+    else
+    {
+        <div class="alert alert-warning">Event not found.</div>
+    }
+    
+    
+    <form>
+        
+    </form>
+</div>
+
+
